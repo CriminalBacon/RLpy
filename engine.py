@@ -1,8 +1,9 @@
 import tcod as libtcod
 
 from fov_functions import initialize_fov, recompute_fov
+from games_states import GamesStates
 from input_handlers import handle_keys
-from entity import Entity
+from entity import Entity, get_blocking_entities_at_location
 from render_functions import render_all, clear_all
 from map_objects.game_map import GameMap
 
@@ -33,7 +34,7 @@ def main():
         #'light_ground': libtcod.Color(235, 220, 170)
     }
 
-    player = Entity(0, 0, '@', libtcod.white)
+    player = Entity(0, 0, '@', libtcod.white, 'Player', blocks=True)
     entities = [player]
 
     # sets font for console
@@ -54,6 +55,8 @@ def main():
 
     key = libtcod.Key()
     mouse = libtcod.Mouse()
+
+    game_state = GamesStates.PLAYERS_TURN
 
     while not libtcod.console_is_window_closed():
         # captures new events
@@ -76,18 +79,35 @@ def main():
         exit = action.get('exit')
         fullscreen = action.get('fullscreen')
 
-        if move:
+        if move and game_state == GamesStates.PLAYERS_TURN:
             dx, dy = move
-            if not game_map.is_blocked(player.x + dx, player.y + dy):
-                player.move(dx, dy)
+            destinaiton_x = player.x + dx
+            destination_y = player.y + dy
 
-                fov_recompute = True
+            if not game_map.is_blocked(destinaiton_x, destination_y):
+                target = get_blocking_entities_at_location(entities, destinaiton_x, destination_y)
+
+                if target:
+                    print('You kick the ' + target.name + ' in the shins, much to its annoyance')
+                else:
+                    player.move(dx, dy)
+
+                    fov_recompute = True
+
+                game_state = GamesStates.ENEMY_TURN
 
         if exit:
             return True
 
         if fullscreen:
             libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
+
+        if game_state == GamesStates.ENEMY_TURN:
+            for entity in entities:
+                if entity != player:
+                    print('The ' + entity.name + ' ponders the meaning of its existence')
+
+            game_state = GamesStates.PLAYERS_TURN
 
 
 if __name__ == '__main__':
