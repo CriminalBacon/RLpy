@@ -18,7 +18,7 @@ def main():
     room_min_size = 6
     max_rooms = 30
 
-    fov_algorithm = 0
+    fov_algorithm = 1
     fov_light_walls = True
     fov_radius = 10
 
