@@ -90,7 +90,7 @@ def main():
                 target = get_blocking_entities_at_location(entities, destinaiton_x, destination_y)
 
                 if target:
-                    print('You kick the ' + target.name + ' in the shins, much to its annoyance')
+                    player.fighter.attack(target)
                 else:
                     player.move(dx, dy)
 
