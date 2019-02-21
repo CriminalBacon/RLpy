@@ -1,5 +1,6 @@
 import tcod as libtcod
 
+from death_funtions import kill_monster, kill_player
 from components.ai import BasicMonster
 from components.fighter import Fighter
 from fov_functions import initialize_fov, recompute_fov
@@ -113,8 +114,14 @@ def main():
 
             if message:
                 print(message)
+
             if dead_entity:
-                pass  #blah blah
+                if dead_entity == player:
+                    message, game_state = kill_player(dead_entity)
+                else:
+                    message = kill_monster(dead_entity)
+
+                print(message)
 
         if game_state == GamesStates.ENEMY_TURN:
             for entity in entities:
@@ -127,8 +134,20 @@ def main():
 
                         if message:
                             print(message)
+
                         if dead_entity:
-                            pass
+                            if dead_entity == player:
+                                message, game_state = kill_player(dead_entity)
+                            else:
+                                message = kill_monster(dead_entity)
+
+                            print(message)
+
+                            if game_state == GamesStates.PLAYER_DEAD:
+                                break
+
+                    if game_state == GamesStates.PLAYER_DEAD:
+                        break
 
             else:
                 game_state = GamesStates.PLAYERS_TURN
