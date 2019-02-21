@@ -107,7 +107,7 @@ def main():
         if game_state == GamesStates.ENEMY_TURN:
             for entity in entities:
                 if entity.ai:
-                    entity.ai.take_turn()
+                    entity.ai.take_turn(player, fov_map, game_map, entities)
 
             game_state = GamesStates.PLAYERS_TURN
 
