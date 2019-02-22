@@ -24,7 +24,7 @@ def render_bar(panel, x, y, total_width, name, value, maximun, bar_color, back_c
                              '{0}: {1}/{2}'.format(name, value, maximun))
 
 
-def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, screen_width, screen_height,
+def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height,
                bar_width, panel_height, panel_y, colors):
     if fov_recompute:
         # Draw all the tiles in the game_map
@@ -52,14 +52,17 @@ def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, s
     for entity in entities_in_render_order:
         draw_entity(con, entity, fov_map)
 
-    #libtcod.console_set_default_foreground(con, libtcod.white)
-    #libtcod.console_print_ex(con, 1, screen_height - 2, libtcod.BKGND_NONE, libtcod.LEFT,
-    #                         'HP: {0:02}/{1:02}'.format(player.fighter.hp, player.fighter.max_hp))
-
     libtcod.console_blit(con, 0, 0, screen_width, screen_height, 0, 0, 0)
 
     libtcod.console_set_default_background(panel, libtcod.black)
     libtcod.console_clear(panel)
+
+    #Print the game messages one line at a time
+    y = 1
+    for message in message_log.messages:
+        libtcod.console_set_default_foreground(panel, message.color)
+        libtcod.console_print_ex(panel, message_log.x, y, libtcod.BKGND_NONE, libtcod.LEFT, message.text)
+        y += 1
 
     render_bar(panel, 1, 1, bar_width, 'HP', player.fighter.hp, player.fighter.max_hp, libtcod.light_red,
                libtcod.darker_red)
